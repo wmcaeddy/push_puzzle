@@ -61,6 +61,10 @@ Sokoban (100+ tiles)
 
 [Kenney](https://opengameart.org/content/sokoban-100-tiles)
 
+Retro Character Sprite Sheet
+
+[isaiah658](https://openclipart.org/detail/248259/retro-character-sprite-sheet)
+
 I appreciate it very much.
 
 ## Author
