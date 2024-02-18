@@ -2,6 +2,8 @@
 
 <img width="600" src="https://user-images.githubusercontent.com/1584153/234482219-4cd323d9-67a0-47b4-af91-87308240276e.gif">
 
+Click here to see a [sample](https://flame-games.github.io/push_puzzle/) of how it works on the web.
+
 ## Usage
 
 ```
