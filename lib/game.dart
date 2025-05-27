@@ -44,6 +44,25 @@ class MainGame extends FlameGame with HasKeyboardHandlerComponents, HasGameRef {
 
   void setCallback(Function fn) => stateCallbackHandler = fn;
 
+  // Method for touch controls to trigger movement
+  void handleDirectionInput(Direction direction) {
+    if (_player.moveCount != 0 || pushGame.state.isClear) {
+      return;
+    }
+
+    bool isMove = pushGame.changeState(direction.name);
+    if (isMove) {
+      playerMove(true, direction);
+      if (pushGame.state.isCrateMove) {
+        createMove();
+      }
+      if (pushGame.state.isClear) {
+        stateCallbackHandler(pushGame.state.isClear);
+        Timer(const Duration(seconds: 3), drawNextStage);
+      }
+    }
+  }
+
   Future<void> draw() async {
     for (var y = 0; y < pushGame.state.splitStageStateList.length; y++) {
       final row = pushGame.state.splitStageStateList[y];
