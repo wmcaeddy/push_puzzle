@@ -1,6 +1,6 @@
 import 'package:flame/components.dart' hide Timer;
 import 'package:flame/game.dart';
-import 'package:flame/input.dart';
+import 'package:flame/events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
@@ -13,7 +13,7 @@ import 'src/push_game.dart';
 import 'utility/config.dart';
 import 'utility/direction.dart';
 
-class MainGame extends FlameGame with KeyboardEvents, HasGameRef {
+class MainGame extends FlameGame with HasKeyboardHandlerComponents, HasGameRef {
   late Function stateCallbackHandler;
 
   PushGame pushGame = PushGame();
@@ -52,24 +52,27 @@ class MainGame extends FlameGame with KeyboardEvents, HasGameRef {
 
       for (var x = 0; x < row.length; x++) {
         final char = row[x];
-        if (x > firstWallIndex && x < lastWallIndex) renderFloor(x.toDouble(), y.toDouble());
-        if (_spriteMap.containsKey(char)) renderBackGround(_spriteMap[char], x.toDouble(), y.toDouble());
+        if (x > firstWallIndex && x < lastWallIndex)
+          renderFloor(x.toDouble(), y.toDouble());
+        if (_spriteMap.containsKey(char))
+          renderBackGround(_spriteMap[char], x.toDouble(), y.toDouble());
         if (char == 'p') initPlayer(x.toDouble(), y.toDouble());
         if (char == 'o') initCrate(x.toDouble(), y.toDouble());
       }
     }
 
     add(_player);
-    for(var crate in _crateList) {
+    for (var crate in _crateList) {
       add(crate);
     }
 
     if (pushGame.state.width > playerCameraWallWidth) {
-      camera.followComponent(_player);
+      camera.follow(_player);
     } else {
-      camera.followVector2(Vector2(pushGame.state.width * oneBlockSize / 2, pushGame.state.height * oneBlockSize / 2));
+      camera.moveTo(Vector2(pushGame.state.width * oneBlockSize / 2,
+          pushGame.state.height * oneBlockSize / 2));
       // final component = _bgComponentList.first;
-      // camera.followComponent(component);
+      // camera.follow(component);
       // camera.setRelativeOffset(Anchor.center);
     }
   }
@@ -124,12 +127,12 @@ class MainGame extends FlameGame with KeyboardEvents, HasGameRef {
 
   @override
   KeyEventResult onKeyEvent(
-      RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    final isKeyDown = event is RawKeyDownEvent;
+      KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    final isKeyDown = event is KeyDownEvent;
     Direction keyDirection = Direction.none;
 
     if (!isKeyDown || _player.moveCount != 0 || pushGame.state.isClear) {
-      return super.onKeyEvent(event, keysPressed);
+      return KeyEventResult.ignored;
     }
 
     keyDirection = getKeyDirection(event);
@@ -144,10 +147,10 @@ class MainGame extends FlameGame with KeyboardEvents, HasGameRef {
         Timer(const Duration(seconds: 3), drawNextStage);
       }
     }
-    return super.onKeyEvent(event, keysPressed);
+    return KeyEventResult.handled;
   }
 
-  Direction getKeyDirection(RawKeyEvent event) {
+  Direction getKeyDirection(KeyEvent event) {
     Direction keyDirection = Direction.none;
     if (event.logicalKey == LogicalKeyboardKey.keyA ||
         event.logicalKey == LogicalKeyboardKey.arrowLeft) {
@@ -175,7 +178,8 @@ class MainGame extends FlameGame with KeyboardEvents, HasGameRef {
   }
 
   void createMove() {
-    final targetCrate = _crateList.firstWhere((crate) => crate.coordinate == pushGame.state.crateMoveBeforeVec);
+    final targetCrate = _crateList.firstWhere(
+        (crate) => crate.coordinate == pushGame.state.crateMoveBeforeVec);
     targetCrate.move(pushGame.state.crateMoveAfterVec);
     targetCrate.goalCheck(pushGame.state.goalVecList);
   }

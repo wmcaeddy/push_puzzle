@@ -11,10 +11,6 @@ OpacityEffect customOpacityEffect = OpacityEffect.fadeOut(
 
 ColorEffect customColorEffect = ColorEffect(
   Colors.blue,
-  const Offset(
-    0.2,
-    0.8,
-  ),
   EffectController(
     duration: 0.8,
     reverseDuration: 0.8,
